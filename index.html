@@ -1,0 +1,44 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Chatbot</title>
+</head>
+<body>
+    <h1>Healthcare Chatbot</h1>
+    <div id="chatbox">
+        <div id="messages"></div>
+        <input type="text" id="user-input" placeholder="Describe your symptoms here" style="width: 80%;">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const input = document.getElementById("user-input").value;
+            if (input) {
+                displayMessage("User", input);
+                fetch("/get_diagnosis", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: input })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayMessage("Bot", `Symptoms: ${data.input_symptoms} <br> Predicted Condition: ${data.predicted_condition}`);
+                });
+            }
+        }
+
+        function displayMessage(sender, message) {
+            const messageDiv = document.createElement("div");
+            messageDiv.className = `message ${sender.toLowerCase()}`;
+            messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            document.getElementById("messages").appendChild(messageDiv);
+            document.getElementById("user-input").value = "";
+        }
+    </script>
+    <link rel="C:\Users\santo\OneDrive\Desktop\ABCD2\static\style.css" href="{{ url_for('static', filename='style.css') }}">
+</body>
+</html>
